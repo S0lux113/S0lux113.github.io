@@ -2,6 +2,7 @@
 
 > 写给第一次用 GitHub 的人。照着做，大约 10 分钟能拿到一个公开网址。
 > 当前账号：`S0lux113`（GitHub 个人主页已确认存在）。
+> **当前状态**：已上线 <https://s0lux113.github.io/>（2026-10-20）。下面既是这次的完整记录，也是以后换电脑 / 重建时的参考。
 
 ---
 
@@ -21,7 +22,11 @@
 - `发布到GitHub.ps1`：一键提交并推送的脚本。
 - 写作台「设置 → 导出发布文件」：把当前资料和文章导出成可发布的 `posts.js`。
 
-**唯一缺的**：这台机器没有你的 GitHub 登录态，且当前网络对 `github.com` 的 Git 连接被重置，所以最后「创建仓库 / 推送 / 开启 Pages」需要你在浏览器里完成。下面的方案 A 完全不需要命令行。
+**当前状态**：仓库 `S0lux113/S0lux113.github.io` 已创建并推送成功，Pages 已开启，线上地址 <https://s0lux113.github.io/>。
+
+> 以后换电脑，只需要安装 Git、`git clone https://github.com/S0lux113/S0lux113.github.io.git`，就能继续写。
+
+下面的方案 A / B 保留完整步骤，方便重建或迁移时参考。
 
 ---
 
@@ -85,6 +90,47 @@ git push -u origin main
 ```powershell
 git remote set-url origin https://github.com/S0lux113/S0lux113.github.io.git
 ```
+
+---
+
+## 这次遇到的坑：push 被拒绝
+
+报错：
+
+```
+! [rejected]        main -> main (fetch first)
+error: failed to push some refs to 'https://github.com/S0lux113/S0lux113.github.io'
+hint: Updates were rejected because the remote contains work that you do not have locally.
+```
+
+**原因**：仓库在网页上已经有一次提交（`Add files via upload`），本地历史是独立创建的，两边没有共同祖先，Git 不允许直接覆盖。
+
+**这次的处理**：
+
+```powershell
+git fetch origin
+git merge origin/main --allow-unrelated-histories -X ours --no-edit
+git push origin main
+```
+
+- `--allow-unrelated-histories`：允许合并两条无关的历史；
+- `-X ours`：冲突时保留本地文件（适合「本地是完整新版」的情况）；
+- 合并后本地包含远程那次上传，push 就变成正常快进，不再被拒绝。
+
+如果远程有你不想丢的内容，先执行 `git log origin/main --stat` 看一眼，再决定是否用 `-X ours`。
+
+---
+
+## 更新后线上还是旧内容？
+
+GitHub Pages 的 CDN 默认缓存约 **10 分钟**。本次已经在 `index.html` 的资源地址后加了 `?v=20261020`，强制浏览器取新文件。
+
+以后更新可以：
+
+- 等 10 分钟再刷新；或者
+- 把 `index.html` 里的 `?v=20261020` 改成新的数字（例如 `?v=20261021`）再推送，立即生效。
+
+浏览器端强制刷新：`Ctrl + F5`。
 
 ---
 
