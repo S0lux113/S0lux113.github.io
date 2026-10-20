@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="ink" data-mode="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f5f2ec" id="metaTheme">
+<meta name="description" content="S0lux · 陈鑫的个人博客：记录 STM32、数学和大学生活里值得写下来的事。">
+<title>S0lux · 陈鑫的个人博客</title>
+<link id="favicon" rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%232f4a7a'/%3E%3Cpath d='M9 22V10h14M9 16h10' stroke='white' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/css/blog.css">
+<script>
+/* 首屏前同步外观，避免深色模式闪白 */
+(function () {
+  try {
+    var ui = JSON.parse(localStorage.getItem('blog.ui.v1') || 'null') || {};
+    var mode = ui.mode === 'dark' || ui.mode === 'light'
+      ? ui.mode
+      : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    document.documentElement.dataset.mode = mode;
+    if (ui.theme) document.documentElement.dataset.theme = ui.theme;
+  } catch (err) { /* 首次访问 */ }
+})();
+</script>
+</head>
+<body>
+
+<!-- 图标库 -->
+<svg class="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/></symbol>
+  <symbol id="i-auto" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2.5"/><path d="M9 20h6M12 16v4"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/><circle cx="9" cy="7" r="2" fill="var(--surface, #fff)"/><circle cx="15" cy="12" r="2" fill="var(--surface, #fff)"/><circle cx="8" cy="17" r="2" fill="var(--surface, #fff)"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L18.5 9.5a2.1 2.1 0 0 0-3-3L5 17v3Z"/><path d="M13.5 6.5l4 4"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V5h6v2M6.5 7l1 13h9l1-13"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M4 12h15M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-arrow-left" viewBox="0 0 24 24"><path d="M20 12H5M11 6l-6 6 6 6"/></symbol>
+  <symbol id="i-arrow-up" viewBox="0 0 24 24"><path d="M12 20V5M6 11l6-6 6 6"/></symbol>
+  <symbol id="i-arrow-up-right" viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><path d="M9 9h10v10H9z"/><path d="M15 9V5H5v10h4"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.5 12s3.6-6 9.5-6 9.5 6 9.5 6-3.6 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.8"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><path d="M4 5.5h16a1.5 1.5 0 0 1 1.5 1.5v10a1.5 1.5 0 0 1-1.5 1.5H4A1.5 1.5 0 0 1 2.5 17V7A1.5 1.5 0 0 1 4 5.5Z"/><path d="M3 7l9 6.5L21 7"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s7-5.9 7-11a7 7 0 1 0-14 0c0 5.1 7 11 7 11Z"/><circle cx="12" cy="10" r="2.6"/></symbol>
+  <symbol id="i-tag" viewBox="0 0 24 24"><path d="M4 4h6l10 10-6 6L4 10V4Z"/><circle cx="8.5" cy="8.5" r="1.2" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="M9.5 14.5l5-5"/><path d="M8 16l-1.4 1.4a3.5 3.5 0 0 1-5-5L5 9"/><path d="M16 8l1.4-1.4a3.5 3.5 0 0 1 5 5L19 15"/></symbol>
+  <symbol id="i-save" viewBox="0 0 24 24"><path d="M5 4h11l3 3v13H5z"/><path d="M8 4v6h7V4M8 20v-5h8v5"/></symbol>
+  <symbol id="i-series" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></symbol>
+  <symbol id="i-quote" viewBox="0 0 24 24"><path d="M9 7c-2.8 0-5 2-5 5s2 4 4 4 3.5-1.6 3.5-3.5S10 9 8.5 9"/><path d="M19 7c-2.8 0-5 2-5 5s2 4 4 4 3.5-1.6 3.5-3.5S20 9 18.5 9"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><path d="M8.5 8L4 12l4.5 4M15.5 8L20 12l-4.5 4"/></symbol>
+  <symbol id="i-bold" viewBox="0 0 24 24"><path d="M7 5h6a3.5 3.5 0 0 1 0 7H7zM7 12h7a3.5 3.5 0 0 1 0 7H7z"/></symbol>
+</svg>
+
+<div class="bg" aria-hidden="true">
+  <span class="bg__orb bg__orb--1"></span>
+  <span class="bg__orb bg__orb--2"></span>
+  <span class="bg__grain"></span>
+</div>
+
+<div class="app">
+  <!-- 左侧个人资料 -->
+  <aside class="sidebar" id="sidebar" aria-label="站点导航">
+    <div class="side-head">
+      <a class="wordmark" href="#/"><span id="wordmarkText">余白</span><i class="wordmark__dot"></i></a>
+      <button class="icon-btn side-close" id="sideClose" type="button" aria-label="关闭导航">
+        <svg class="icon"><use href="#i-close"></use></svg>
+      </button>
+    </div>
+
+    <div class="profile">
+      <button class="avatar" id="avatarBtn" type="button" aria-label="更换头像">
+        <img id="avatarImg" alt="头像" hidden>
+        <span id="avatarMono">林</span>
+      </button>
+      <p class="profile__name" id="profileName">林知远</p>
+      <p class="profile__role" id="profileRole">产品设计师 / 写作者</p>
+      <p class="profile__tagline" id="profileTagline">记录设计、阅读与生活里那些值得慢下来的事。</p>
+      <ul class="profile__meta" id="profileMeta"></ul>
+      <ul class="profile__socials" id="profileSocials"></ul>
+    </div>
+
+    <nav class="nav" id="nav" aria-label="页面">
+      <a href="#/" data-nav="home"><span>文章</span><span class="nav__count" id="navCount">6</span></a>
+      <a href="#/archive" data-nav="archive"><span>归档</span><span class="nav__count" id="navArchive">6</span></a>
+      <a href="#/about" data-nav="about"><span>关于</span></a>
+      <a href="#/manage" data-nav="manage"><span>写作台</span><span class="nav__count nav__count--dot" aria-hidden="true"></span></a>
+    </nav>
+
+    <div class="side-foot">
+      <div class="theme-switch" id="themeSwitch" role="group" aria-label="显示模式">
+        <button type="button" data-mode="light" title="浅色" aria-label="浅色">
+          <svg class="icon"><use href="#i-sun"></use></svg>
+        </button>
+        <button type="button" data-mode="dark" title="深色" aria-label="深色">
+          <svg class="icon"><use href="#i-moon"></use></svg>
+        </button>
+        <button type="button" data-mode="auto" title="跟随系统" aria-label="跟随系统">
+          <svg class="icon"><use href="#i-auto"></use></svg>
+        </button>
+      </div>
+
+      <div class="side-foot__row">
+        <button class="text-btn" id="btnSettings" type="button">
+          <svg class="icon"><use href="#i-settings"></use></svg><span>设置</span>
+        </button>
+        <button class="text-btn" id="btnWrite" type="button">
+          <svg class="icon"><use href="#i-edit"></use></svg><span>写文章</span>
+        </button>
+      </div>
+
+      <p class="side-copy">© <span id="footYear">2025</span> <span id="footSite">余白</span></p>
+    </div>
+  </aside>
+
+  <!-- 右侧内容 -->
+  <div class="content">
+    <header class="mobilebar">
+      <button class="icon-btn" id="btnMenu" type="button" aria-label="打开导航" aria-expanded="false">
+        <svg class="icon"><use href="#i-menu"></use></svg>
+      </button>
+      <a class="mobilebar__title" href="#/" id="mobileTitle">余白</a>
+      <button class="icon-btn" id="btnMobileTheme" type="button" aria-label="切换深浅色">
+        <svg class="icon"><use href="#i-moon"></use></svg>
+      </button>
+    </header>
+
+    <main class="main" id="view" tabindex="-1"></main>
+
+    <footer class="site-foot">
+      <span id="footCopy">© 2025 余白</span>
+      <span class="site-foot__sep" aria-hidden="true">·</span>
+      <span>用 HTML / CSS / JavaScript 手写</span>
+    </footer>
+  </div>
+</div>
+
+<div class="progress" id="progress" aria-hidden="true"><span></span></div>
+<div class="scrim" id="scrim"></div>
+
+<!-- 设置抽屉 -->
+<aside class="drawer" id="settings" role="dialog" aria-modal="true" aria-labelledby="settingsTitle" aria-hidden="true">
+  <header class="drawer__head">
+    <div>
+      <p class="eyebrow">站点与个人资料</p>
+      <h2 class="drawer__title" id="settingsTitle">设置</h2>
+    </div>
+    <button class="icon-btn" id="btnCloseSettings" type="button" aria-label="关闭设置">
+      <svg class="icon"><use href="#i-close"></use></svg>
+    </button>
+  </header>
+
+  <div class="drawer__body" id="settingsBody">
+    <div class="avatar-row">
+      <div class="avatar avatar--edit" id="settingsAvatar">
+        <img id="settingsAvatarImg" alt="" hidden>
+        <span id="settingsAvatarMono">林</span>
+      </div>
+      <div class="avatar-row__body">
+        <p class="field__hint">头像会自动裁成方形并压缩到 320px，只保存在本机。</p>
+        <div class="row">
+          <button class="btn btn-ghost btn-sm" id="btnUploadAvatar" type="button">上传图片</button>
+          <button class="btn btn-ghost btn-sm" id="btnClearAvatar" type="button">移除</button>
+        </div>
+      </div>
+    </div>
+
+    <p class="section-label">站点</p>
+    <label class="field">
+      <span class="field__name">站点名称</span>
+      <input class="input" type="text" maxlength="20" data-field="siteName" placeholder="例如：余白">
+    </label>
+
+    <div class="form-row">
+      <label class="field">
+        <span class="field__name">姓名</span>
+        <input class="input" type="text" maxlength="20" data-field="name" placeholder="你的名字">
+      </label>
+      <label class="field">
+        <span class="field__name">身份</span>
+        <input class="input" type="text" maxlength="30" data-field="role" placeholder="设计师 / 写作者">
+      </label>
+    </div>
+
+    <label class="field">
+      <span class="field__name">一句话介绍</span>
+      <input class="input" type="text" maxlength="60" data-field="tagline" placeholder="首页与侧栏都会用到">
+    </label>
+
+    <div class="form-row">
+      <label class="field">
+        <span class="field__name">所在地</span>
+        <input class="input" type="text" maxlength="20" data-field="location" placeholder="北京">
+      </label>
+      <label class="field">
+        <span class="field__name">邮箱</span>
+        <input class="input" type="email" maxlength="60" data-field="email" placeholder="hi@example.com">
+      </label>
+    </div>
+
+    <label class="field">
+      <div class="field__head">
+        <span class="field__name">个人简介</span>
+        <span class="field__count" id="bioCount">0 / 300</span>
+      </div>
+      <textarea class="input textarea" rows="4" maxlength="300" data-field="bio" placeholder="介绍你在做什么、关心什么；换行会保留分段。"></textarea>
+    </label>
+
+    <div class="section-head">
+      <p class="section-label">社交链接</p>
+      <button class="btn btn-ghost btn-xs" id="btnAddSocial" type="button">
+        <svg class="icon"><use href="#i-plus"></use></svg><span>添加</span>
+      </button>
+    </div>
+    <div class="social-editor" id="socialEditor"></div>
+    <p class="field__hint">有网址的显示为链接；没有网址的账号（微信、QQ 等）会以文字显示在「关于」页。</p>
+
+    <p class="section-label">主题色</p>
+    <div class="swatches" id="swatches"></div>
+
+    <p class="section-label">数据</p>
+    <div class="data-actions">
+      <button class="btn btn-ghost btn-sm" id="btnExportSeed" type="button">导出发布文件</button>
+      <button class="btn btn-ghost btn-sm" id="btnExport" type="button">导出备份</button>
+      <button class="btn btn-ghost btn-sm" id="btnImport" type="button">导入备份</button>
+      <button class="btn btn-ghost btn-sm btn-danger" id="btnReset" type="button">恢复示例</button>
+    </div>
+    <p class="field__hint">「导出发布文件」会生成 posts.js：替换网站里的 assets/js/posts.js 并上传，访客才能看到你新写的内容。普通备份只用于换设备恢复。</p>
+  </div>
+
+  <footer class="drawer__foot">
+    <p class="drawer__foot-note" id="drawerNote">修改会自动保存</p>
+    <button class="btn btn-primary" id="btnDone" type="button">完成</button>
+  </footer>
+</aside>
+
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<input type="file" id="avatarInput" accept="image/png,image/jpeg,image/webp,image/gif" hidden>
+<input type="file" id="importInput" accept="application/json,.json" hidden>
+
+<script src="assets/js/markdown.js"></script>
+<script src="assets/js/posts.js"></script>
+<script src="assets/js/blog.js"></script>
+</body>
+</html>
